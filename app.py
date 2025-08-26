@@ -1,12 +1,13 @@
 from flask import Flask, request, render_template, redirect, url_for
+import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import io
 import base64
 import requests
-import sqlite3  # NEW: Library for database
-from datetime import datetime  # NEW: To get current time
+import sqlite3
+from datetime import datetime
 
 app = Flask(__name__)
 
