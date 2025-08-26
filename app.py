@@ -50,18 +50,32 @@ init_db()
 NEWS_API_KEY = '5a71e2ab1f5e4e4f8af67592fa154e40'
 
 def fetch_news(ticker):
+    """Fetches real news headlines for a given stock ticker from NewsAPI"""
+    # Debug: Check if the key is loaded (this will appear in Railway logs)
+    print(f"[DEBUG] Attempting to fetch news for: {ticker}")
+    
     url = f"https://newsapi.org/v2/everything?q={ticker}&apiKey={NEWS_API_KEY}&sortBy=publishedAt&language=en"
     try:
         response = requests.get(url)
         data = response.json()
-        if data['status'] == 'ok':
-            headlines = [article['title'] for article in data['articles'][:10]]
+        print(f"[DEBUG] News API Response Status: {data.get('status')}") # Log the status
+
+        # Check if the response is successful and has articles
+        if data.get('status') == 'ok' and 'articles' in data:
+            headlines = [article['title'] for article in data['articles'][:10]] # Get top 10 headlines
+            print(f"[DEBUG] Successfully fetched {len(headlines)} headlines.")
             return headlines
         else:
-            return ["Error fetching news. Please check your API key or try manual mode."]
-    except Exception as e:
-        return [f"An error occurred: {str(e)}"]
+            # Return a helpful error message that will be shown to the user
+            error_message = data.get('message', 'Unknown error from News API.')
+            print(f"[ERROR] News API Error: {error_message}")
+            return [f"News API Error: {error_message}. Please try manual mode."]
 
+    except Exception as e:
+        # This catches any network errors or other unexpected issues
+        error_msg = f"A network error occurred: {str(e)}"
+        print(f"[ERROR] {error_msg}")
+        return [error_msg]
 def analyze_sentiment(text):
     # ... [Your existing analyze_sentiment function code remains exactly the same] ...
     text = text.lower()
